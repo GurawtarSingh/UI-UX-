@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Museum Companion | Gurawtar Singh</title>
+<meta name="description" content="Case study: designing an accessible app & website for a public art museum.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------------------------------------------------------
+     TOKENS — monochrome (mirrors the homepage, accent removed)
+  --------------------------------------------------------- */
+  :root{
+    --bg: #F5F5F1;
+    --surface: #FFFFFF;
+    --surface-2: #EFEEE8;
+    --ink: #15160F;
+    --ink-soft: #6E6F64;
+    --ink-faint: #A5A599;
+    --line: #E4E2D8;
+    --charcoal: #1B1C16;
+    --sage: #60746A;
+    --clay: #A65D48;
+    --ochre: #B68B3F;
+    --mist: #E7ECE7;
+    --rose-mist: #F0E2DB;
+
+    --font-display: "Bricolage Grotesque", "Inter", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --radius-pill: 999px;
+
+    --container: 1180px;
+    --ease: cubic-bezier(.16,.84,.44,1);
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  img{ display:block; max-width:100%; }
+  a{ color: inherit; text-decoration: none; }
+  ul{ list-style: none; }
+  button, input, textarea, select{ font-family: inherit; }
+  button{ cursor: pointer; border: none; background: none; color: inherit; }
+
+  .wrap{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    flex-shrink: 0;
+  }
+
+  h1, h2, h3, h4{
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  p{ color: var(--ink-soft); }
+
+  .section{
+    padding: 108px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .section:last-of-type{ border-bottom: none; }
+
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+  }
+  #research .section-head,
+  #accessibility .section-head{
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,.78), rgba(239,238,232,.62));
+    border: 1px solid rgba(228,226,216,.9);
+    border-radius: var(--radius-lg);
+    padding: clamp(28px, 4vw, 46px);
+    overflow: hidden;
+    box-shadow: 0 28px 70px -58px rgba(20,20,10,.48);
+  }
+  #research .section-head::after,
+  #accessibility .section-head::after{
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    right: -70px;
+    top: -90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(96,116,106,.18), rgba(96,116,106,0) 68%);
+    pointer-events: none;
+  }
+  .section-head h2{
+    font-size: clamp(30px, 3.8vw, 44px);
+    line-height: 1.08;
+    max-width: 620px;
+  }
+  .section-head p{
+    color: var(--ink-soft);
+    max-width: 360px;
+    font-size: 15.5px;
+  }
+  .lede{
+    max-width: 700px;
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 56px;
+  }
+  #research .lede{
+    max-width: 900px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--sage);
+    border-radius: var(--radius-md);
+    padding: clamp(24px, 3vw, 34px);
+    color: var(--ink);
+    font-size: clamp(15.5px, 1.7vw, 18px);
+    line-height: 1.85;
+    box-shadow: 0 24px 64px -52px rgba(20,20,10,.38);
+  }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 26px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 14.5px;
+    transition: transform .35s var(--ease), background .25s ease, color .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .btn-primary{ background: var(--ink); color: #fff; }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(20,20,10,.45); }
+  .btn-ghost{ background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .btn-ghost:hover{ border-color: var(--ink); transform: translateY(-2px); }
+  .btn svg{ width: 15px; height: 15px; flex-shrink: 0; transition: transform .3s var(--ease); }
+  .btn:hover svg{ transform: translate(2px,-2px); }
+
+  /* ---------------------------------------------------------
+     NAV
+  --------------------------------------------------------- */
+  .nav-outer{
+    position: fixed; top: 22px; left: 0; right: 0; z-index: 500;
+    display: flex; justify-content: center; padding: 0 20px;
+  }
+  .nav{
+    width: 100%; max-width: 880px;
+    background: rgba(255,255,255,.8);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(228,226,216,.9);
+    border-radius: var(--radius-pill);
+    padding: 8px 8px 8px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 20px 40px -24px rgba(20,20,10,.25);
+  }
+  .nav-brand{ display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14.5px; white-space: nowrap; }
+  .nav-brand .dot{
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--ink); color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .nav-links{ display: flex; align-items: center; gap: 4px; }
+  .nav-links a{
+    padding: 10px 16px; border-radius: var(--radius-pill);
+    font-size: 14px; font-weight: 500; color: var(--ink-soft);
+    transition: background .25s ease, color .25s ease;
+  }
+  .nav-links a:hover, .nav-links a.active{ background: var(--surface-2); color: var(--ink); }
+  .nav .btn-ghost{ padding: 11px 20px; font-size: 13.5px; }
+  .nav-toggle{ display: none; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .nav-toggle span, .nav-toggle::before, .nav-toggle::after{
+    content: ""; display: block; width: 18px; height: 1.6px; background: var(--ink);
+    position: relative; transition: transform .3s ease, opacity .3s ease;
+  }
+  .nav-toggle span{ margin: 4px 0; }
+  .mobile-menu{
+    position: fixed; top: 84px; left: 20px; right: 20px;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md);
+    padding: 12px; display: none; flex-direction: column; gap: 4px; z-index: 499;
+    box-shadow: 0 24px 50px -20px rgba(20,20,10,.3);
+  }
+  .mobile-menu.open{ display: flex; }
+  .mobile-menu a{ padding: 14px 16px; border-radius: var(--radius-sm); font-weight: 500; font-size: 15px; }
+  .mobile-menu a:hover{ background: var(--surface-2); }
+
+  /* ---------------------------------------------------------
+     REVEAL
+  --------------------------------------------------------- */
+  .reveal{ opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in-view{ opacity: 1; transform: translateY(0); }
+
+  /* ---------------------------------------------------------
+     HERO
+  --------------------------------------------------------- */
+  .cs-hero{ padding: 132px 0 82px; }
+  .back-link{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 500; color: var(--ink-soft);
+    margin-bottom: 34px; transition: color .25s ease, gap .25s ease;
+  }
+  .back-link svg{ width: 14px; height: 14px; }
+  .back-link:hover{ color: var(--ink); gap: 11px; }
+
+  .case-hero-panel{
+    min-height: clamp(560px, 72vh, 760px);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 78% 18%, rgba(255,255,255,.16), transparent 26%),
+      linear-gradient(135deg, #20211A 0%, #15160F 52%, #303126 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(34px, 5vw, 70px);
+    display: grid;
+    grid-template-columns: minmax(0, .95fr) minmax(320px, 1.05fr);
+    align-items: center;
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 50px 100px -58px rgba(20,20,10,.7);
+  }
+  .case-hero-panel::before{
+    content: "";
+    position: absolute;
+    inset: 26px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: calc(var(--radius-lg) - 8px);
+    pointer-events: none;
+  }
+  .case-hero-copy{
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+  }
+  .case-logo{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: clamp(70px, 13vh, 130px);
+  }
+  .case-logo-img{
+    width: min(100%, 500px);
+    height: auto;
+    object-fit: contain;
+  }
+  .case-hero-copy h1{
+    color: #fff;
+    font-size: clamp(36px, 4vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .case-hero-copy p{
+    color: rgba(255,255,255,.72);
+    max-width: 500px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .case-hero-tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 34px;
+  }
+  .case-hero-tags span{
+    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.82);
+    border-radius: var(--radius-pill);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .case-hero-visual{
+    position: relative;
+    z-index: 1;
+    align-self: end;
+    min-height: 520px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .case-hero-visual::before{
+    content: "";
+    position: absolute;
+    width: min(76%, 520px);
+    height: 52%;
+    bottom: 7%;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    filter: blur(4px);
+  }
+  .thinker-statue{
+    width: min(100%, 580px);
+    max-height: 620px;
+    object-fit: contain;
+    object-position: bottom center;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 34px 42px rgba(0,0,0,.55));
+    animation: statueFloat 5.5s var(--ease) infinite;
+  }
+  @keyframes statueFloat{
+    0%, 100%{ transform: translateY(0) rotate(-1deg); }
+    50%{ transform: translateY(-14px) rotate(1deg); }
+  }
+  @keyframes logoFloat{
+    0%, 100%{ transform: translateY(0); }
+    50%{ transform: translateY(-8px); }
+  }
+
+  /* ---------------------------------------------------------
+     OVERVIEW
+  --------------------------------------------------------- */
+  .project-overview{
+    display: grid;
+    grid-template-columns: minmax(0, .92fr) minmax(340px, 520px);
+    gap: clamp(42px, 6vw, 92px);
+    align-items: center;
+    position: relative;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.92), rgba(239,238,232,.6)),
+      radial-gradient(circle at 8% 10%, rgba(166,93,72,.1), transparent 34%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(30px, 5vw, 66px);
+    overflow: hidden;
+    box-shadow: 0 40px 90px -72px rgba(20,20,10,.5);
+  }
+  .project-overview::before{
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(21,22,15,.06);
+    border-radius: calc(var(--radius-lg) - 10px);
+    pointer-events: none;
+  }
+  .project-overview::after{
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    right: -82px;
+    bottom: -96px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(182,139,63,.18), rgba(182,139,63,0) 68%);
+    pointer-events: none;
+  }
+  .overview-copy,
+  .overview-phone{
+    position: relative;
+    z-index: 1;
+  }
+  .overview-copy h2{
+    font-size: clamp(34px, 4.4vw, 56px);
+    line-height: 1.02;
+    margin-bottom: 46px;
+  }
+  .overview-list{
+    display: grid;
+    gap: 22px;
+    max-width: 640px;
+  }
+  .overview-actions{
+    margin-top: 30px;
+  }
+  .overview-entry{
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(228,226,216,.82);
+    border-radius: var(--radius-md);
+    padding: 22px;
+  }
+  .overview-entry:nth-child(2){
+    display: none;
+  }
+  .overview-icon{
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .overview-icon svg{
+    width: 29px;
+    height: 29px;
+  }
+  .overview-entry h3{
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .overview-entry p{
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 520px;
+  }
+  .overview-phone{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .overview-phone img{
+    width: min(100%, 430px);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 34px 38px rgba(20,20,10,.22));
+  }
+
+  /* ---------------------------------------------------------
+     PAIN POINTS / ACCESSIBILITY GRID (4-col card grid)
+  --------------------------------------------------------- */
+  .card-grid-4{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .info-card{
+    position: relative;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,.78) 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 30px 26px 28px;
+    overflow: hidden;
+    min-height: 225px;
+    transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+  }
+  .info-card::before{
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 5px;
+    background: var(--sage);
+  }
+  .info-card:nth-child(2)::before{ background: var(--clay); }
+  .info-card:nth-child(3)::before{ background: var(--ochre); }
+  .info-card:nth-child(4)::before{ background: var(--ink); }
+  .info-card::after{
+    content: "";
+    position: absolute;
+    width: 118px;
+    height: 118px;
+    right: -50px;
+    bottom: -54px;
+    border-radius: 50%;
+    background: rgba(96,116,106,.09);
+    pointer-events: none;
+  }
+  .info-card:hover{
+    transform: translateY(-6px);
+    border-color: rgba(21,22,15,.16);
+    box-shadow: 0 30px 58px -38px rgba(20,20,10,.38);
+  }
+  .info-icon{
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    display: grid; place-items: center; margin-bottom: 22px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 12px 22px -18px rgba(20,20,10,.7);
+  }
+  .info-card:nth-child(1) .info-icon{ background: var(--sage); }
+  .info-card:nth-child(2) .info-icon{ background: var(--clay); }
+  .info-card:nth-child(3) .info-icon{ background: var(--ochre); }
+  .info-icon svg{ width: 19px; height: 19px; }
+  .info-card h4{
+    font-size: 16.5px;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .info-card p{
+    font-size: 13.5px;
+    line-height: 1.65;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------------------------------------------------------
+     PERSONAS
+  --------------------------------------------------------- */
+  .persona-layout{
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+    gap: clamp(38px, 6vw, 74px);
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(28px, 5vw, 58px);
+    box-shadow: 0 38px 84px -72px rgba(20,20,10,.42);
+  }
+  .persona-copy{
+    border-left: 5px solid var(--clay);
+    padding-left: clamp(22px, 3vw, 34px);
+  }
+  .persona-copy h2{
+    font-size: clamp(34px, 4.4vw, 56px);
+    line-height: 1.02;
+    margin-bottom: 40px;
+  }
+  .persona-copy h3{
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .persona-copy p{
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.75;
+    background: var(--rose-mist);
+    border-radius: var(--radius-md);
+    padding: 22px;
+  }
+  .persona-image{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .persona-image img{
+    width: min(100%, 760px);
+    height: auto;
+    object-fit: contain;
+  }
+  .persona-col-label{
+    font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--ink-faint); margin-bottom: 12px; margin-top: 22px;
+  }
+  .persona-col-label:first-of-type{ margin-top: 0; }
+
+  /* ---------------------------------------------------------
+     JOURNEY MAP
+  --------------------------------------------------------- */
+  .journey-layout{
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+    gap: clamp(38px, 6vw, 74px);
+    align-items: center;
+    background:
+      linear-gradient(135deg, rgba(231,236,231,.88), rgba(255,255,255,.7));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(28px, 5vw, 58px);
+    box-shadow: 0 38px 84px -72px rgba(20,20,10,.42);
+  }
+  .journey-copy{
+    border-left: 5px solid var(--sage);
+    padding-left: clamp(22px, 3vw, 34px);
+  }
+  .journey-copy h2{
+    font-size: clamp(34px, 4.4vw, 56px);
+    line-height: 1.02;
+    margin-bottom: 40px;
+  }
+  .journey-copy h3{
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .journey-copy p{
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.75;
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(228,226,216,.86);
+    border-radius: var(--radius-md);
+    padding: 22px;
+  }
+  .journey-image{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .journey-image img{
+    width: min(100%, 760px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* ---------------------------------------------------------
+     STARTING THE DESIGN
+  --------------------------------------------------------- */
+  .design-start-panel{
+    min-height: clamp(430px, 56vh, 620px);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 78% 18%, rgba(255,255,255,.12), transparent 28%),
+      linear-gradient(135deg, #20211A 0%, #15160F 52%, #303126 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(44px, 7vw, 90px);
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 50px 100px -58px rgba(20,20,10,.7);
+  }
+  .design-start-panel::before{
+    content: "";
+    position: absolute;
+    inset: 24px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: calc(var(--radius-lg) - 8px);
+    pointer-events: none;
+  }
+  .design-start-content{
+    position: relative;
+    z-index: 1;
+    width: min(100%, 720px);
+    display: grid;
+    grid-template-columns: minmax(180px, .8fr) 1px minmax(240px, 1fr);
+    gap: clamp(28px, 5vw, 54px);
+    align-items: center;
+  }
+  .design-start-content h2{
+    color: #fff;
+    font-size: clamp(38px, 5vw, 66px);
+    line-height: .98;
+    text-align: right;
+    letter-spacing: -0.02em;
+  }
+  .design-divider{
+    width: 1px;
+    height: 150px;
+    background: rgba(255,255,255,.35);
+  }
+  .design-start-content ul{
+    display: grid;
+    gap: 15px;
+  }
+  .design-start-content li{
+    color: rgba(255,255,255,.86);
+    font-size: clamp(17px, 2vw, 21px);
+    line-height: 1.3;
+    display: grid;
+    grid-template-columns: 10px minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+  .design-start-content li::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  /* ---------------------------------------------------------
+     SITEMAP
+  --------------------------------------------------------- */
+  .sitemap-layout{
+    display: grid;
+    grid-template-columns: minmax(260px, 440px) minmax(0, 1fr);
+    gap: clamp(48px, 8vw, 110px);
+    align-items: center;
+  }
+  .sitemap-copy h2{
+    font-size: clamp(44px, 6vw, 74px);
+    line-height: .98;
+    margin-bottom: 92px;
+  }
+  .sitemap-copy p{
+    color: var(--ink);
+    font-size: clamp(22px, 2.5vw, 32px);
+    line-height: 1.9;
+    max-width: 540px;
+  }
+  .sitemap-image{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .sitemap-image img{
+    width: min(100%, 560px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* ---------------------------------------------------------
+     PAPER WIREFRAMES
+  --------------------------------------------------------- */
+  .paper-layout{
+    display: grid;
+    grid-template-columns: minmax(260px, 420px) minmax(0, 1fr);
+    gap: clamp(48px, 8vw, 110px);
+    align-items: center;
+  }
+  .paper-copy h2{
+    font-size: clamp(44px, 6vw, 74px);
+    line-height: .98;
+    margin-bottom: 92px;
+  }
+  .paper-copy p{
+    color: var(--ink);
+    font-size: clamp(22px, 2.5vw, 32px);
+    line-height: 1.9;
+    max-width: 540px;
+  }
+  .paper-image{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .paper-image img{
+    width: min(100%, 720px);
+    height: auto;
+    object-fit: contain;
+  }
+  /* ---------------------------------------------------------
+     LOW-FIDELITY PROTOTYPE
+  --------------------------------------------------------- */
+  .lofi-layout{
+    display: grid;
+    grid-template-columns: minmax(260px, 390px) minmax(0, 1fr);
+    gap: clamp(48px, 7vw, 92px);
+    align-items: center;
+  }
+  .lofi-copy h2{
+    font-size: clamp(44px, 6vw, 74px);
+    line-height: 1.08;
+    margin-bottom: 92px;
+  }
+  .lofi-copy p{
+    color: var(--ink);
+    font-size: clamp(21px, 2.2vw, 30px);
+    line-height: 1.9;
+    max-width: 430px;
+    margin-bottom: 36px;
+  }
+  .prototype-btn{
+    border-radius: var(--radius-pill);
+    background: var(--ink);
+    color: #fff;
+    padding: 15px 24px;
+    font-size: 14.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .prototype-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px -22px rgba(20,20,10,.55);
+  }
+  .prototype-btn svg{
+    width: 16px;
+    height: 16px;
+  }
+  .lofi-image{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .lofi-image img{
+    width: min(100%, 920px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* image frames WITHOUT any colored background — just the picture */
+  .device-frame{
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 40px 70px -40px rgba(20,20,10,.3);
+    background: transparent;
+  }
+  .device-frame img{ width: 100%; display: block; }
+  .frame-narrow{ max-width: 300px; margin: 0 auto; }
+
+  /* ---------------------------------------------------------
+     HI-FI MOCKUPS
+  --------------------------------------------------------- */
+  .mockups-panel{
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 82% 12%, rgba(255,255,255,.1), transparent 28%),
+      linear-gradient(135deg, #20211A 0%, #15160F 52%, #303126 100%);
+    color: #fff;
+    padding: clamp(34px, 5vw, 64px);
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 50px 100px -58px rgba(20,20,10,.7);
+    overflow: hidden;
+  }
+  .mockups-head{
+    display: grid;
+    grid-template-columns: minmax(220px, .7fr) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 72px);
+    align-items: end;
+    margin-bottom: 42px;
+  }
+  .mockups-head h2{
+    color: #fff;
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1;
+  }
+  .mockups-head p{
+    color: rgba(255,255,255,.72);
+    font-size: clamp(15px, 1.5vw, 18px);
+    line-height: 1.75;
+    max-width: 760px;
+  }
+  .mockups-image img{
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-md);
+    box-shadow: 0 34px 70px -46px rgba(0,0,0,.75);
+  }
+
+  /* ---------------------------------------------------------
+     FINAL SCREENS
+  --------------------------------------------------------- */
+  .final-screens-panel{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(34px, 5vw, 64px);
+    overflow: hidden;
+    box-shadow: 0 40px 90px -70px rgba(20,20,10,.35);
+  }
+  .final-screens-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 34px;
+    margin-bottom: 42px;
+    flex-wrap: wrap;
+  }
+  .final-screens-head h2{
+    color: var(--ink);
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1;
+  }
+  .final-screens-head p{
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.7;
+    max-width: 520px;
+  }
+  .final-screens-copy{
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    max-width: 540px;
+  }
+  .final-screens-copy p{
+    margin: 0;
+  }
+  .final-prototype-btn{
+    border-radius: var(--radius-pill);
+    background: var(--ink);
+    color: #fff;
+    padding: 14px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .final-prototype-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px -22px rgba(20,20,10,.55);
+  }
+  .final-prototype-btn svg{
+    width: 16px;
+    height: 16px;
+  }
+  .final-screen-grid{
+    display: grid;
+    grid-template-columns: repeat(7, minmax(160px, 1fr));
+    gap: 18px;
+    align-items: start;
+    overflow-x: auto;
+    padding: 4px 4px 14px;
+    scrollbar-width: thin;
+  }
+  .final-screen{
+    min-width: 160px;
+  }
+  .final-screen img{
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 22px;
+    box-shadow: 0 28px 48px -34px rgba(20,20,10,.55);
+  }
+  .final-screen figcaption{
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  /* ---------------------------------------------------------
+     CONTACT (closing, dark)
+  --------------------------------------------------------- */
+  .outcome-band{
+    background:
+      radial-gradient(circle at 84% 18%, rgba(182,139,63,.24), transparent 30%),
+      linear-gradient(135deg, #1B1C16 0%, #11120E 58%, #2A2C23 100%);
+    border-radius: var(--radius-lg);
+    padding: 64px 60px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 46px 90px -60px rgba(20,20,10,.75);
+  }
+  .outcome-band::before{
+    content: "";
+    position: absolute;
+    inset: 24px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: calc(var(--radius-lg) - 8px);
+    pointer-events: none;
+  }
+  .outcome-band > *{
+    position: relative;
+    z-index: 1;
+  }
+  .outcome-band .eyebrow{ color: rgba(255,255,255,.55); }
+  .outcome-band .eyebrow::before{ background: #fff; }
+  .contact-layout{
+    display: grid;
+    grid-template-columns: minmax(240px, .78fr) minmax(320px, 1fr);
+    gap: clamp(34px, 6vw, 76px);
+    align-items: start;
+  }
+  .contact-copy h2{
+    color: #fff;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1;
+    margin-bottom: 22px;
+  }
+  .contact-copy p{
+    color: rgba(255,255,255,.72);
+    font-size: 16px;
+    line-height: 1.75;
+    max-width: 420px;
+    margin-bottom: 30px;
+  }
+  .contact-direct{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.32);
+    transition: border-color .25s ease, gap .25s ease;
+  }
+  .contact-direct:hover{
+    gap: 14px;
+    border-color: #fff;
+  }
+  .contact-direct svg{
+    width: 15px;
+    height: 15px;
+  }
+  .contact-form{
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: var(--radius-md);
+    padding: clamp(24px, 4vw, 34px);
+    backdrop-filter: blur(12px);
+  }
+  .contact-field-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .contact-field{
+    margin-bottom: 18px;
+  }
+  .contact-field label{
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.62);
+    margin-bottom: 9px;
+  }
+  .contact-field input,
+  .contact-field textarea,
+  .contact-field select{
+    width: 100%;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,.92);
+    color: var(--ink);
+    font-size: 15px;
+    padding: 15px 16px;
+    outline: none;
+    transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .contact-field textarea{
+    resize: vertical;
+    min-height: 150px;
+  }
+  .contact-field input:focus,
+  .contact-field textarea:focus,
+  .contact-field select:focus{
+    background: #fff;
+    border-color: rgba(255,255,255,.55);
+    box-shadow: 0 0 0 4px rgba(255,255,255,.12);
+  }
+  .contact-submit{
+    width: 100%;
+    justify-content: center;
+    background: #fff;
+    color: var(--ink);
+    padding: 16px 22px;
+    margin-top: 4px;
+  }
+  .contact-submit:hover{
+    box-shadow: 0 14px 26px -12px rgba(0,0,0,.5);
+  }
+  .contact-note{
+    margin-top: 16px;
+    color: rgba(255,255,255,.55);
+    font-size: 12.5px;
+    text-align: center;
+  }
+  .contact-success{
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    background: rgba(228,245,230,.95);
+    color: #276534;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .contact-success.show{ display: flex; }
+  .contact-success svg{
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+  }
+
+  /* ---------------------------------------------------------
+     FOOTER
+  --------------------------------------------------------- */
+  .site-footer{ padding: 70px 0 40px; }
+  .footer-top{
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-bottom: 50px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 30px;
+  }
+  .footer-brand h3{ font-size: 26px; margin-bottom: 10px; }
+  .footer-brand p{ color: var(--ink-soft); max-width: 320px; font-size: 14px; }
+  .footer-cols{ display: flex; gap: 60px; }
+  .footer-col h5{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+  .footer-col a{
+    display: block;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    transition: color .25s ease;
+  }
+  .footer-col a:hover{ color: var(--ink); }
+  .footer-bottom{
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-faint);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* ---------------------------------------------------------
+     RESPONSIVE
+  --------------------------------------------------------- */
+  @media (max-width: 980px){
+    .case-hero-panel{
+      grid-template-columns: 1fr;
+      gap: 38px;
+    }
+    .case-logo{ margin-bottom: 54px; }
+    .case-hero-visual{
+      min-height: 420px;
+      justify-content: flex-end;
+    }
+    .thinker-statue{ max-height: 470px; }
+    .project-overview{
+      grid-template-columns: 1fr;
+      gap: 54px;
+    }
+    .overview-copy h2{ margin-bottom: 42px; }
+    .overview-phone{ justify-content: flex-start; }
+    .overview-phone img{ width: min(82vw, 390px); }
+    .card-grid-4{ grid-template-columns: repeat(2, 1fr); }
+    .persona-layout{
+      grid-template-columns: 1fr;
+      gap: 42px;
+    }
+    .persona-copy h2{ margin-bottom: 42px; }
+    .persona-image{ justify-content: flex-start; }
+    .journey-layout{
+      grid-template-columns: 1fr;
+      gap: 42px;
+    }
+    .journey-copy h2{ margin-bottom: 42px; }
+    .journey-image{ justify-content: flex-start; }
+    .design-start-content{
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .design-start-content h2{ text-align: left; }
+    .design-divider{
+      width: 100%;
+      height: 1px;
+    }
+    .sitemap-layout{
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .sitemap-copy h2{ margin-bottom: 42px; }
+    .sitemap-image{ justify-content: flex-start; }
+    .paper-layout{
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .paper-copy h2{ margin-bottom: 42px; }
+    .paper-image{ justify-content: flex-start; }
+    .lofi-layout{
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .lofi-copy h2{ margin-bottom: 42px; }
+    .lofi-image{ justify-content: flex-start; }
+    .mockups-head{ grid-template-columns: 1fr; }
+    .final-screen-grid{
+      grid-template-columns: repeat(7, minmax(180px, 1fr));
+    }
+    .contact-layout{ grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 720px){
+    .wrap{ padding: 0 20px; }
+    .nav{ padding: 8px; }
+    .nav-links{ display: none; }
+    .nav-toggle{ display: flex; }
+    .section{ padding: 72px 0; }
+    .cs-hero{ padding-top: 130px; }
+    .case-hero-panel{
+      min-height: 0;
+      padding: 28px;
+      border-radius: var(--radius-md);
+    }
+    .case-hero-panel::before{ inset: 14px; border-radius: 14px; }
+    .case-logo{
+      gap: 12px;
+      margin-bottom: 46px;
+    }
+    .case-logo-img{ width: min(100%, 360px); }
+    .case-hero-visual{
+      min-height: 320px;
+      justify-content: center;
+    }
+    .thinker-statue{ max-height: 360px; }
+    .section-head{ margin-bottom: 36px; }
+    #research .section-head,
+    #accessibility .section-head{
+      padding: 24px;
+      border-radius: var(--radius-md);
+    }
+    #research .lede{
+      padding: 22px;
+      border-radius: var(--radius-md);
+    }
+    .card-grid-4{ grid-template-columns: 1fr; }
+    .outcome-band{ padding: 44px 26px; }
+    .contact-field-row{ grid-template-columns: 1fr; gap: 0; }
+    .project-overview,
+    .persona-layout,
+    .journey-layout{
+      padding: 24px;
+      border-radius: var(--radius-md);
+    }
+    .project-overview::before{
+      inset: 12px;
+      border-radius: 14px;
+    }
+    .overview-entry{
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 18px;
+      padding: 18px;
+    }
+    .overview-icon{
+      width: 48px;
+      height: 48px;
+    }
+    .overview-icon svg{
+      width: 24px;
+      height: 24px;
+    }
+    .overview-entry p{
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+    .overview-phone{ justify-content: center; }
+    .persona-copy p{
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 18px;
+    }
+    .journey-copy p{
+      font-size: 15px;
+      line-height: 1.7;
+      padding: 18px;
+    }
+    .persona-copy,
+    .journey-copy{
+      padding-left: 18px;
+    }
+    .design-start-panel{
+      min-height: 420px;
+      padding: 42px 28px;
+      border-radius: var(--radius-md);
+    }
+    .design-start-panel::before{
+      inset: 14px;
+      border-radius: 14px;
+    }
+    .design-start-content li{ gap: 16px; }
+    .final-screens-panel{
+      padding: 32px 20px;
+      border-radius: var(--radius-md);
+    }
+    .final-screen-grid{
+      gap: 14px;
+      grid-template-columns: repeat(7, minmax(150px, 1fr));
+    }
+    .final-screen img{ border-radius: 18px; }
+    .sitemap-copy p{
+      font-size: 18px;
+      line-height: 1.75;
+    }
+    .sitemap-image{ justify-content: center; }
+    .paper-copy p{
+      font-size: 18px;
+      line-height: 1.75;
+    }
+    .paper-image{ justify-content: center; }
+    .lofi-copy p{
+      font-size: 18px;
+      line-height: 1.75;
+    }
+    .lofi-image{ justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<div class="nav-outer">
+  <nav class="nav" id="siteNav">
+    <a href="index.html" class="nav-brand">
+      <span class="dot">GS</span>
+      Gurawtar Singh
+    </a>
+    <div class="nav-links">
+      <a href="index.html#work" class="nav-link">Work</a>
+      <a href="index.html#services" class="nav-link">Services</a>
+      <a href="index.html#certificates" class="nav-link">Certificates</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#outcome" class="btn btn-primary">
+        Contact
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+      </a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span></button>
+  </nav>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#work">Work</a>
+  <a href="index.html#services">Services</a>
+  <a href="index.html#certificates">Certificates</a>
+  <a href="#outcome">Contact</a>
+</div>
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="cs-hero">
+    <div class="wrap">
+      <a href="index.html#work" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 7L7 17M7 17H16M7 17V8"/></svg>
+        Back to work
+      </a>
+
+      <div class="case-hero-panel reveal">
+        <div class="case-hero-copy">
+          <div class="case-logo">
+            <img class="case-logo-img" src="assets/logo.png" alt="Meridian">
+          </div>
+
+          <h1>Gurawtar Singh</h1>
+          <p>A UX case study for a public museum experience, designed around accessibility, clearer planning, and confident independent booking.</p>
+          <div class="case-hero-tags" aria-label="Case study details">
+            <span>UX Research</span>
+            <!-- <span>8 Weeks</span> -->
+            <span>App</span>
+            <span>Accessibility</span>
+          </div>
+        </div>
+
+        <div class="case-hero-visual" aria-hidden="true">
+          <img class="thinker-statue" src="assets/thinker-00.png" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OVERVIEW ================= -->
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="project-overview reveal">
+        <div class="overview-copy">
+          <h2>Project overview</h2>
+
+          <div class="overview-list">
+            <div class="overview-entry">
+              <div class="overview-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>
+                  <path d="M14 3v6h6"/>
+                  <path d="M8 15h8"/>
+                  <path d="M8 11h2"/>
+                </svg>
+              </div>
+              <div>
+                <h3>The product:</h3>
+                <p>A museum companion app and responsive website that help visitors explore exhibitions, find access information, and book visits independently.</p>
+              </div>
+            </div>
+
+            <div class="overview-entry">
+              <!-- <div class="overview-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 2"/>
+                </svg>
+              </div> -->
+              <!-- <div>
+                <h3>Project duration:</h3>
+                <p>8 weeks</p>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="overview-actions">
+            <a class="prototype-btn" target="_blank" rel="noopener" href="https://www.figma.com/design/wHm41yrItPOtesUCgoI8ki/Meridian?node-id=79-620&t=O5rdItwysBZmcnOx-1" aria-label="View prototype">
+              View prototype
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7"/>
+                <path d="M9 7h8v8"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="overview-phone">
+          <img src="assets/main.png" alt="Mobile app screen for the museum companion project">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESEARCH ================= -->
+  <section class="section" id="research">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">UNDERSTANDING THE USER</div>
+          <h2>Research: who gets left out, and why</h2>
+        </div>
+        <p>Six qualitative interviews, grounded in equity-focused reasoning rather than a guess.</p>
+      </div>
+
+      <p class="lede reveal">The brief didn't name a specific audience, so I ran a business-requirements conversation with the museum, then applied equity-focused reasoning to find who was underserved. Older adults and visitors with visual, hearing, or mobility-related disabilities emerged as the primary research focus. I recruited six participants with a screener survey and conducted 15–20 minute interviews to understand their real planning and booking experiences.</p>
+
+      <div class="card-grid-4 reveal">
+        <div class="info-card">
+          <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-7.5 7-12a7 7 0 10-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+          <h4>Hard-to-find accessibility info</h4>
+          <p>Seating, ramps, and parking details are missing or buried on museum websites.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">Aa</div>
+          <h4>Small text, low contrast</h4>
+          <p>Text sizing and color contrast make pages difficult to read for low-vision visitors.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">CC</div>
+          <h4>No video captions</h4>
+          <p>Promotional and virtual-tour videos rarely include captions or transcripts.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 109-9M3 12l3-3M3 12l3 3"/></svg></div>
+          <h4>Confusing booking flow</h4>
+          <p>Uncertainty about whether a booking went through, with no clear confirmation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PERSONAS ================= -->
+  <section class="section" id="personas">
+    <div class="wrap">
+      <div class="persona-layout reveal">
+        <div class="persona-copy">
+          <h2>Persona: James</h2>
+          <h3>Problem statement:</h3>
+          <p>James is a retired teacher with low vision who needs to plan and book museum visits independently because accessibility information is often hard to find before arriving.</p>
+        </div>
+
+        <div class="persona-image">
+          <img src="assets/prosona.png" alt="Persona details for James">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JOURNEY MAP ================= -->
+  <section class="section" id="journey">
+    <div class="wrap">
+      <div class="journey-layout reveal">
+        <div class="journey-copy">
+          <h2>Journey map</h2>
+          <h3>Goal:</h3>
+          <p>James wants to find accessibility and practical museum information, then book a visit independently with clear confirmation at every step.</p>
+        </div>
+
+        <div class="journey-image">
+          <img src="assets/journeymap.png" alt="User journey map for James booking a museum visit">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STARTING THE DESIGN ================= -->
+  <section class="section" id="starting-design">
+    <div class="wrap">
+      <div class="design-start-panel reveal">
+        <div class="design-start-content">
+          <h2>Starting<br>the<br>design</h2>
+          <div class="design-divider" aria-hidden="true"></div>
+          <ul>
+            <li>Sitemap</li>
+            <li>Paper wireframes</li>
+            <li>Digital wireframes</li>
+            <li>Low-fidelity prototype</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SITEMAP ================= -->
+  <section class="section" id="sitemap">
+    <div class="wrap">
+      <div class="sitemap-layout reveal">
+        <div class="sitemap-copy">
+          <h2>Sitemap</h2>
+          <p>I built user-focused flows to ensure that my personas could successfully complete their key objectives while reducing existing pain points.</p>
+        </div>
+
+        <div class="sitemap-image">
+          <img src="assets/sitemap.png" alt="Sitemap showing the product information architecture">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PAPER WIREFRAMES ================= -->
+  <section class="section" id="paper-wireframes">
+    <div class="wrap">
+      <div class="paper-layout reveal">
+        <div class="paper-copy">
+          <h2>Paper wireframes</h2>
+          <p>Focusing on the core features identified during user research, I sketched the first wireframes using pen and paper.</p>
+        </div>
+
+        <div class="paper-image">
+          <img src="assets/paperwireframe.png" alt="Hand-drawn paper wireframe sketch">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOW-FIDELITY PROTOTYPE ================= -->
+  <section class="section" id="design">
+    <div class="wrap">
+      <div class="lofi-layout reveal">
+        <div class="lofi-copy">
+          <h2>Low-fidelity prototype</h2>
+          <p>I created a low-fidelity prototype from the user flow diagram and wireframes to test functionality before incorporating it into the final design.</p>
+          <!-- <a class="prototype-btn" href="#" aria-label="View app prototype">
+            View app prototype
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17L17 7"/>
+              <path d="M9 7h8v8"/>
+            </svg>
+          </a> -->
+        </div>
+
+        <div class="lofi-image">
+          <img src="assets/Wireframe Museum App.png" alt="Low-fidelity app prototype flow">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HI-FI MOCKUPS ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="mockups-panel reveal">
+        <div class="mockups-head">
+          <h2>Mockups</h2>
+          <p>Based on usability insights, I refined the app screens with clearer hierarchy, stronger visual cues, and more useful practitioner details so users can compare options with less effort.</p>
+        </div>
+
+        <div class="mockups-image">
+          <img src="assets/Mockups.png" alt="Before and after mockups for the app search results screen">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL SCREENS ================= -->
+  <section class="section" id="final-screens">
+    <div class="wrap">
+      <div class="final-screens-panel reveal">
+        <div class="final-screens-head">
+          <h2>Final screen mockups</h2>
+          <div class="final-screens-copy">
+            <p>A complete app flow refined into clean, readable screens for discovery, event details, checkout, confirmation, and booking management.</p>
+            <a class="final-prototype-btn" target="_blank" href="https://www.figma.com/design/wHm41yrItPOtesUCgoI8ki/Meridian?node-id=79-620&t=O5rdItwysBZmcnOx-1" aria-label="View final prototype">
+              View final prototype
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7"/>
+                <path d="M9 7h8v8"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="final-screen-grid" aria-label="Final app screens in sequence">
+          <figure class="final-screen">
+            <img src="assets/home.png" alt="Final app home screen">
+            <figcaption>Home</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/search.png" alt="Final app search screen">
+            <figcaption>Search</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/event-main.png" alt="Final app event overview screen">
+            <figcaption>Event main</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/eventpage.png" alt="Final app event detail screen">
+            <figcaption>Event page</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/checkout.png" alt="Final app checkout screen">
+            <figcaption>Checkout</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/complete.png" alt="Final app booking completion screen">
+            <figcaption>Complete</figcaption>
+          </figure>
+          <figure class="final-screen">
+            <img src="assets/my booking.png" alt="Final app my booking screen">
+            <figcaption>My booking</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACCESSIBILITY ================= -->
+  <section class="section" id="accessibility">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">ACCESSIBILITY</div>
+          <h2>Designed to WCAG AA, not bolted on after</h2>
+        </div>
+        <p>Considered at every stage, not patched in at the end.</p>
+      </div>
+
+      <div class="card-grid-4 reveal">
+        <div class="info-card">
+          <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/></svg></div>
+          <h4>Color & contrast</h4>
+          <p>Every primary color pairing checked against WCAG AA before any UI was built.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">CC</div>
+          <h4>Captions by default</h4>
+          <p>All video plays with captions on, backed by a full searchable transcript.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">Aa</div>
+          <h4>Clear text hierarchy</h4>
+          <p>Two typefaces only, with a consistent size and weight system throughout.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M3 6h18M3 18h18"/></svg></div>
+          <h4>Simple, predictable nav</h4>
+          <p>Fewer choices per screen, with accessibility info placed where it's remembered.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="section" id="outcome" style="border-bottom:none; padding-bottom: 40px;">
+    <div class="wrap">
+      <div class="outcome-band reveal">
+        <div class="contact-layout">
+          <div class="contact-copy">
+            <div class="eyebrow">CONTACT</div>
+            <h2>Have a project in mind?</h2>
+            <p>Share a few details and I'll get back to you. I am open to UX, product design, portfolio, and website work.</p>
+            <a class="contact-direct" href="mailto:gurawtarsingh@gmail.com">
+              Email directly
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7"/>
+                <path d="M9 7h8v8"/>
+              </svg>
+            </a>
+          </div>
+
+          <form class="contact-form" id="caseContactForm">
+            <div class="contact-field-row">
+              <div class="contact-field">
+                <label for="caseName">Name</label>
+                <input type="text" id="caseName" name="name" placeholder="Your name" required>
+              </div>
+              <div class="contact-field">
+                <label for="caseEmail">Email</label>
+                <input type="email" id="caseEmail" name="email" placeholder="you@email.com" required>
+              </div>
+            </div>
+
+            <div class="contact-field">
+              <label for="caseProject">Project type</label>
+              <select id="caseProject" name="project">
+                <option>UX / UI design</option>
+                <option>Website design</option>
+                <option>Portfolio design</option>
+                <option>Case study feedback</option>
+              </select>
+            </div>
+
+            <div class="contact-field">
+              <label for="caseMessage">Message</label>
+              <textarea id="caseMessage" name="message" placeholder="Tell me a little about what you need..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn contact-submit">Send message</button>
+            <div class="contact-note">Your details stay private and are only used to reply.</div>
+            <div class="contact-success" id="caseContactSuccess">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Message sent. I'll be in touch soon.
+            </div>
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>Gurawtar Singh</h3>
+        <p>UI/UX Designer crafting research-driven digital products from Punjab, India.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Menu</h5>
+          <a href="index.html#work">Work</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#certificates">Certificates</a>
+        </div>
+        <div class="footer-col">
+          <h5>Connect</h5>
+          <a href="https://www.linkedin.com/in/gurawtarsinghkarwal/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:gurawtarsingh@gmail.com">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Gurawtar Singh. All rights reserved.</span>
+      <span>Designed &amp; built with care.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var navToggle = document.getElementById('navToggle');
+  var mobileMenu = document.getElementById('mobileMenu');
+  navToggle.addEventListener('click', function(){ mobileMenu.classList.toggle('open'); });
+  mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ mobileMenu.classList.remove('open'); });
+  });
+
+  var reveals = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  var sections = document.querySelectorAll('main section[id]');
+  var navLinks = document.querySelectorAll('.nav-link');
+  if('IntersectionObserver' in window){
+    var navIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          navLinks.forEach(function(link){
+            link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    sections.forEach(function(s){ navIO.observe(s); });
+  }
+
+  var caseContactForm = document.getElementById('caseContactForm');
+  var caseContactSuccess = document.getElementById('caseContactSuccess');
+  if(caseContactForm && caseContactSuccess){
+    var caseSubmitBtn = caseContactForm.querySelector('.contact-submit');
+    caseContactForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      caseSubmitBtn.disabled = true;
+      caseSubmitBtn.textContent = 'Sending...';
+
+      var payload = {
+        access_key: '59fd613c-67a0-436a-a84b-75a252209d39',
+        name: document.getElementById('caseName').value,
+        email: document.getElementById('caseEmail').value,
+        project: document.getElementById('caseProject').value,
+        message: document.getElementById('caseMessage').value,
+        subject: 'New message from Meridian case study page'
+      };
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(data.success){
+          caseContactSuccess.classList.add('show');
+          caseSubmitBtn.textContent = 'Sent';
+          setTimeout(function(){
+            caseContactForm.reset();
+            caseContactSuccess.classList.remove('show');
+            caseSubmitBtn.textContent = 'Send message';
+            caseSubmitBtn.disabled = false;
+          }, 3200);
+        } else {
+          caseSubmitBtn.textContent = 'Something went wrong — try again';
+          caseSubmitBtn.disabled = false;
+        }
+      })
+      .catch(function(){
+        caseSubmitBtn.textContent = 'Something went wrong — try again';
+        caseSubmitBtn.disabled = false;
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
