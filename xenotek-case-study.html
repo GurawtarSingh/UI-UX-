@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xenotek Website Case Study | Gurawtar Singh</title>
+<meta name="description" content="UI/UX case study for Xenotek — a software development company website, shown in desktop and mobile mockups.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #F5F5F1;
+    --surface: #FFFFFF;
+    --surface-2: #EFEEE8;
+    --ink: #15160F;
+    --ink-soft: #6E6F64;
+    --ink-faint: #A5A599;
+    --line: #E4E2D8;
+    --charcoal: #1B1C16;
+
+    --font-display: "Bricolage Grotesque", "Inter", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --radius-pill: 999px;
+    --container: 1180px;
+    --ease: cubic-bezier(.16,.84,.44,1);
+  }
+
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img{ display: block; max-width: 100%; }
+  a{ color: inherit; text-decoration: none; }
+  button, input, textarea, select{ font-family: inherit; }
+  button{ border: none; background: none; color: inherit; cursor: pointer; }
+
+  .wrap{
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .section{
+    padding: 108px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .section:last-of-type{ border-bottom: none; }
+  .eyebrow{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  h1, h2, h3, h4{
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  p{ color: var(--ink-soft); }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: var(--radius-pill);
+    padding: 15px 24px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .25s ease;
+  }
+  .btn-dark{ background: var(--ink); color: #fff; }
+  .btn-light{ background: #fff; color: var(--ink); }
+  .btn-ghost{ border: 1.5px solid var(--line); color: var(--ink); }
+  .btn:hover{ transform: translateY(-2px); box-shadow: 0 18px 34px -22px rgba(20,20,10,.55); }
+  .btn svg{ width: 15px; height: 15px; }
+
+  .nav-outer{
+    position: fixed;
+    top: 22px;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+  }
+  .nav{
+    width: 100%;
+    max-width: 880px;
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(228,226,216,.9);
+    border-radius: var(--radius-pill);
+    padding: 8px 8px 8px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    box-shadow: 0 20px 40px -24px rgba(20,20,10,.25);
+  }
+  .nav-brand{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .nav-brand .dot{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .nav-links{ display: flex; align-items: center; gap: 4px; }
+  .nav-links a{
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .nav-links a:hover,
+  .nav-links a.active{
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .nav .btn{ padding: 11px 18px; font-size: 13px; }
+  .nav-toggle{ display: none; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .nav-toggle span,
+  .nav-toggle::before,
+  .nav-toggle::after{
+    content: "";
+    display: block;
+    width: 18px;
+    height: 1.6px;
+    background: var(--ink);
+    position: relative;
+  }
+  .nav-toggle span{ margin: 4px 0; }
+  .mobile-menu{
+    position: fixed;
+    top: 84px;
+    left: 20px;
+    right: 20px;
+    z-index: 499;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    box-shadow: 0 24px 50px -20px rgba(20,20,10,.3);
+  }
+  .mobile-menu.open{ display: flex; }
+  .mobile-menu a{ padding: 14px 16px; border-radius: var(--radius-sm); font-weight: 600; }
+  .mobile-menu a:hover{ background: var(--surface-2); }
+
+  .reveal{ opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in-view{ opacity: 1; transform: translateY(0); }
+
+  .hero{ padding: 132px 0 82px; }
+  .back-link{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 34px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: color .25s ease, gap .25s ease;
+  }
+  .back-link:hover{ color: var(--ink); gap: 11px; }
+  .back-link svg{ width: 14px; height: 14px; }
+  .hero-panel{
+    min-height: clamp(560px, 72vh, 760px);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(circle at 78% 16%, rgba(255,255,255,.14), transparent 28%),
+      linear-gradient(135deg, #20211A 0%, #15160F 56%, #303126 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(34px, 5vw, 70px);
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(360px, 1.18fr);
+    gap: clamp(30px, 5vw, 70px);
+    align-items: center;
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 50px 100px -58px rgba(20,20,10,.7);
+  }
+  .hero-panel::before{
+    content: "";
+    position: absolute;
+    inset: 26px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: calc(var(--radius-lg) - 8px);
+    pointer-events: none;
+  }
+  .hero-copy,
+  .hero-visual{ position: relative; z-index: 1; }
+  .hero-copy h1{
+    color: #fff;
+    font-size: clamp(42px, 6vw, 82px);
+    line-height: .94;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
+  }
+  .hero-copy p{
+    color: rgba(255,255,255,.74);
+    max-width: 530px;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .hero-tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 34px;
+  }
+  .hero-tags span{
+    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.84);
+    border-radius: var(--radius-pill);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .hero-visual{
+    align-self: stretch;
+    display: grid;
+    align-items: center;
+  }
+  .hero-visual img{
+    width: 100%;
+    height: auto;
+  }
+
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+  }
+  .section-head h2{
+    font-size: clamp(34px, 4.4vw, 58px);
+    line-height: 1;
+    max-width: 680px;
+  }
+  .section-head p{
+    max-width: 420px;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  .overview-panel{
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, .92fr) minmax(360px, 1.08fr);
+    gap: clamp(42px, 7vw, 92px);
+    align-items: center;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.94), rgba(239,238,232,.64)),
+      radial-gradient(circle at 8% 10%, rgba(21,22,15,.06), transparent 34%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(30px, 5vw, 66px);
+    overflow: hidden;
+    box-shadow: 0 40px 90px -72px rgba(20,20,10,.5);
+  }
+  .overview-panel::before{
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(21,22,15,.06);
+    border-radius: calc(var(--radius-lg) - 10px);
+    pointer-events: none;
+  }
+  .overview-copy,
+  .overview-media{ position: relative; z-index: 1; }
+  .overview-copy h2{
+    font-size: clamp(34px, 4.6vw, 60px);
+    line-height: 1;
+    margin-bottom: 28px;
+  }
+  .overview-copy p{
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.85;
+    max-width: 570px;
+  }
+  .overview-list{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 34px;
+  }
+  .overview-actions{
+    margin-top: 30px;
+  }
+  .overview-stat{
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(228,226,216,.9);
+    border-radius: var(--radius-md);
+    padding: 18px;
+  }
+  .overview-stat strong{
+    display: block;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .overview-stat span{
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .overview-media img{
+    width: 100%;
+    height: auto;
+  }
+
+  .compare-panel{
+    display: grid;
+    gap: 24px;
+  }
+  .compare-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(22px, 4vw, 44px);
+    align-items: start;
+  }
+  .compare-grid img{
+    width: 100%;
+    height: auto;
+  }
+
+  .lofi-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(22px, 4vw, 44px);
+  }
+  .lofi-grid img{
+    width: 100%;
+    height: auto;
+  }
+
+  .final-direction{
+    display: grid;
+    gap: clamp(22px, 4vw, 44px);
+  }
+  .final-direction img{
+    width: 100%;
+    height: auto;
+  }
+
+  .mockup-gallery{
+    display: grid;
+    gap: clamp(22px, 4vw, 44px);
+  }
+  .mockup-gallery img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .contact-band{
+    background:
+      radial-gradient(circle at 84% 18%, rgba(255,255,255,.08), transparent 30%),
+      linear-gradient(135deg, #1B1C16 0%, #11120E 58%, #2A2C23 100%);
+    border-radius: var(--radius-lg);
+    padding: 64px 60px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 46px 90px -60px rgba(20,20,10,.75);
+  }
+  .contact-band::before{
+    content: "";
+    position: absolute;
+    inset: 24px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: calc(var(--radius-lg) - 8px);
+    pointer-events: none;
+  }
+  .contact-layout{
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(240px, .78fr) minmax(320px, 1fr);
+    gap: clamp(34px, 6vw, 76px);
+    align-items: start;
+  }
+  .contact-copy .eyebrow{ color: rgba(255,255,255,.58); }
+  .contact-copy h2{
+    color: #fff;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1;
+    margin-bottom: 22px;
+  }
+  .contact-copy p{
+    color: rgba(255,255,255,.72);
+    font-size: 16px;
+    line-height: 1.75;
+    max-width: 420px;
+    margin-bottom: 30px;
+  }
+  .contact-direct{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.32);
+  }
+  .contact-form{
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: var(--radius-md);
+    padding: clamp(24px, 4vw, 34px);
+    backdrop-filter: blur(12px);
+  }
+  .contact-field-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .contact-field{ margin-bottom: 18px; }
+  .contact-field label{
+    display: block;
+    margin-bottom: 9px;
+    color: rgba(255,255,255,.62);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .contact-field input,
+  .contact-field textarea,
+  .contact-field select{
+    width: 100%;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,.92);
+    color: var(--ink);
+    font-size: 15px;
+    padding: 15px 16px;
+    outline: none;
+  }
+  .contact-field textarea{
+    min-height: 150px;
+    resize: vertical;
+  }
+  .contact-submit{
+    width: 100%;
+    background: #fff;
+    color: var(--ink);
+    padding: 16px 22px;
+    margin-top: 4px;
+  }
+  .contact-note{
+    margin-top: 16px;
+    color: rgba(255,255,255,.55);
+    font-size: 12.5px;
+    text-align: center;
+  }
+  .contact-success{
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    background: rgba(228,245,230,.95);
+    color: #276534;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .contact-success.show{ display: flex; }
+  .contact-success svg{ width: 17px; height: 17px; }
+
+  .site-footer{ padding: 70px 0 40px; }
+  .footer-top{
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-bottom: 50px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 30px;
+  }
+  .footer-brand h3{ font-size: 26px; margin-bottom: 10px; }
+  .footer-brand p{ color: var(--ink-soft); max-width: 320px; font-size: 14px; }
+  .footer-cols{ display: flex; gap: 60px; }
+  .footer-col h5{
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+  .footer-col a{
+    display: block;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    transition: color .25s ease;
+  }
+  .footer-col a:hover{ color: var(--ink); }
+  .footer-bottom{
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-faint);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 980px){
+    .hero-panel,
+    .overview-panel,
+    .contact-layout{
+      grid-template-columns: 1fr;
+    }
+    .overview-list{ grid-template-columns: 1fr; }
+    .compare-grid,
+    .lofi-grid{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px){
+    .wrap{ padding: 0 20px; }
+    .nav{ padding: 8px; }
+    .nav-links,
+    .nav .btn{ display: none; }
+    .nav-toggle{ display: flex; }
+    .section{ padding: 74px 0; }
+    .hero{ padding-top: 130px; }
+    .hero-panel,
+    .overview-panel,
+    .contact-band{
+      border-radius: var(--radius-md);
+      padding: 28px;
+    }
+    .hero-panel::before,
+    .overview-panel::before,
+    .contact-band::before{
+      inset: 14px;
+      border-radius: 14px;
+    }
+    .section-head{ margin-bottom: 34px; }
+    .contact-field-row{ grid-template-columns: 1fr; gap: 0; }
+  }
+
+  .hero-logo{
+    display: block;
+    width: clamp(160px, 20vw, 230px);
+    height: auto;
+    margin-bottom: 26px;
+  }
+  .shot{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 34px 76px -60px rgba(20,20,10,.45);
+  }
+  .shot img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .shot figcaption{
+    padding: 16px 22px 20px;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+  .stack{
+    display: grid;
+    gap: clamp(22px, 4vw, 40px);
+  }
+  #desktop .shot{
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  .mobile-grid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 34px);
+  }
+
+  @media (max-width: 720px){
+    .mobile-grid{ grid-template-columns: 1fr; }
+    .shot{ border-radius: var(--radius-md); }
+    .shot figcaption{ padding: 14px 18px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav-outer">
+  <nav class="nav" id="siteNav">
+    <a href="index.html" class="nav-brand">
+      <span class="dot">GS</span>
+      Gurawtar Singh
+    </a>
+    <div class="nav-links">
+      <a href="index.html#work" class="nav-link">Work</a>
+      <a href="index.html#services" class="nav-link">Services</a>
+      <a href="index.html#certificates" class="nav-link">Certificates</a>
+    </div>
+    <a href="#contact" class="btn btn-dark">
+      Contact
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu"><span></span></button>
+  </nav>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#work">Work</a>
+  <a href="index.html#services">Services</a>
+  <a href="index.html#certificates">Certificates</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <a href="index.html#work" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 7L7 17M7 17H16M7 17V8"/></svg>
+        Back to work
+      </a>
+
+      <div class="hero-panel reveal">
+        <div class="hero-copy">
+          <h1>Xenotek website</h1>
+          <p>A website for a software development company that builds web apps, mobile apps, and internal tools. The old site was hard to read and didn't look like the work behind it, so I rebuilt the whole thing around clear words and real proof.</p>
+          <div class="hero-tags" aria-label="Case study details">
+            <span>UI / UX Design</span>
+            <span>Website</span>
+            <span>Responsive</span>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <img src="assets/XENOTEK-IMG.png" alt="Xenotek homepage hero on desktop">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="overview-panel reveal">
+        <div class="overview-copy">
+          <div class="eyebrow">Project overview</div>
+          <h2>One clear message, then the proof</h2>
+          <p>Most people landing here are deciding between three agencies at once. So the homepage says what Xenotek does in one line, shows who they build for, and puts the stack out in the open — no jargon, nothing to dig for.</p>
+          <div class="overview-list" aria-label="Project summary">
+            <div class="overview-stat">
+              <strong>01</strong>
+              <span>Homepage and hero</span>
+            </div>
+            <div class="overview-stat">
+              <strong>02</strong>
+              <span>Who we build for</span>
+            </div>
+            <div class="overview-stat">
+              <strong>03</strong>
+              <span>Technologies section</span>
+            </div>
+          </div>
+          <div class="overview-actions">
+            <a class="btn btn-dark" target="_blank" rel="noopener" href="https://www.figma.com/design/2THCypVZuo9eVioVZwba7Y/Untitled?node-id=75-2&t=XeZeyt3qZfGxEFnW-1&desktop-link-click-timestamp=1787841881093&desktop-ul-exp-bucket=po" aria-label="View prototype">
+              View prototype
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7"/>
+                <path d="M9 7h8v8"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="overview-media">
+          <img src="assets/MOBILE-1.png" alt="Xenotek homepage on mobile">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="desktop">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Desktop screens</div>
+          <h2>How the page reads on a big screen</h2>
+        </div>
+        <p>Three sections in the order a visitor meets them — the hero, the client strip, and the stack. Big type, plenty of space, and the work doing the talking.</p>
+      </div>
+
+      <div class="stack reveal">
+        <figure class="shot">
+          <img src="assets/image 1.png" alt="Xenotek desktop hero section">
+          <figcaption>Home — hero</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/DESKTOP-2.png" alt="Xenotek desktop marquee section">
+          <figcaption>Home — service marquee</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/DESKTOP-3.png" alt="Xenotek desktop who we build for section">
+          <figcaption>Who we build for</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/DESKTOP-4.png" alt="Xenotek desktop technologies section">
+          <figcaption>Technologies</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="mobile">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Mobile screens</div>
+          <h2>Same page, built for a phone first</h2>
+        </div>
+        <p>A lot of enquiries come in from a phone, so every section was checked at this width — one column, tappable pills, and the headline still landing above the fold.</p>
+      </div>
+
+      <div class="mobile-grid reveal">
+        <figure class="shot">
+          <img src="assets/MOBILE-1.png" alt="Xenotek mobile hero screen">
+          <figcaption>Home — hero</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/MOBILE-2.png" alt="Xenotek mobile marquee screen">
+          <figcaption>Home — service marquee</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/MOBILE--3.png" alt="Xenotek mobile who we build for screen">
+          <figcaption>Who we build for</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="assets/MOBILE-4.png" alt="Xenotek mobile technologies screen">
+          <figcaption>Technologies</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact" style="border-bottom:none; padding-bottom: 40px;">
+    <div class="wrap">
+      <div class="contact-band reveal">
+        <div class="contact-layout">
+          <div class="contact-copy">
+            <div class="eyebrow">Contact</div>
+            <h2>Have a project in mind?</h2>
+            <p>Share a few details and I'll get back to you. I am open to UX, product design, portfolio, and website work.</p>
+            <a class="contact-direct" href="mailto:gurawtarsingh@gmail.com">
+              Email directly
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17L17 7"/>
+                <path d="M9 7h8v8"/>
+              </svg>
+            </a>
+          </div>
+
+          <form class="contact-form" id="caseContactForm">
+            <div class="contact-field-row">
+              <div class="contact-field">
+                <label for="caseName">Name</label>
+                <input type="text" id="caseName" name="name" placeholder="Your name" required>
+              </div>
+              <div class="contact-field">
+                <label for="caseEmail">Email</label>
+                <input type="email" id="caseEmail" name="email" placeholder="you@email.com" required>
+              </div>
+            </div>
+
+            <div class="contact-field">
+              <label for="caseProject">Project type</label>
+              <select id="caseProject" name="project">
+                <option>UX / UI design</option>
+                <option>Website design</option>
+                <option>Portfolio design</option>
+                <option>Design system</option>
+              </select>
+            </div>
+
+            <div class="contact-field">
+              <label for="caseMessage">Message</label>
+              <textarea id="caseMessage" name="message" placeholder="Tell me a little about what you need..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn contact-submit">Send message</button>
+            <div class="contact-note">Your details stay private and are only used to reply.</div>
+            <div class="contact-success" id="caseContactSuccess">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+              Message sent. I'll be in touch soon.
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>Gurawtar Singh</h3>
+        <p>UI/UX Designer crafting research-driven digital products from Punjab, India.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Menu</h5>
+          <a href="index.html#work">Work</a>
+          <a href="index.html#services">Services</a>
+          <a href="index.html#certificates">Certificates</a>
+        </div>
+        <div class="footer-col">
+          <h5>Connect</h5>
+          <a href="https://www.linkedin.com/in/gurawtarsinghkarwal/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:gurawtarsingh@gmail.com">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Gurawtar Singh. All rights reserved.</span>
+      <span>Designed &amp; built with care.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var navToggle = document.getElementById('navToggle');
+  var mobileMenu = document.getElementById('mobileMenu');
+  if(navToggle && mobileMenu){
+    navToggle.addEventListener('click', function(){ mobileMenu.classList.toggle('open'); });
+    mobileMenu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ mobileMenu.classList.remove('open'); });
+    });
+  }
+
+  var reveals = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  var sections = document.querySelectorAll('main section[id]');
+  var navLinks = document.querySelectorAll('.nav-link');
+  if('IntersectionObserver' in window){
+    var navIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          navLinks.forEach(function(link){
+            link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    sections.forEach(function(s){ navIO.observe(s); });
+  }
+
+  var caseContactForm = document.getElementById('caseContactForm');
+  var caseContactSuccess = document.getElementById('caseContactSuccess');
+  if(caseContactForm && caseContactSuccess){
+    var caseSubmitBtn = caseContactForm.querySelector('.contact-submit');
+    caseContactForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      caseSubmitBtn.disabled = true;
+      caseSubmitBtn.textContent = 'Sending...';
+
+      var payload = {
+        access_key: '59fd613c-67a0-436a-a84b-75a252209d39',
+        name: document.getElementById('caseName').value,
+        email: document.getElementById('caseEmail').value,
+        project: document.getElementById('caseProject').value,
+        message: document.getElementById('caseMessage').value,
+        subject: 'New message from Xenotek case study page'
+      };
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(data.success){
+          caseContactSuccess.classList.add('show');
+          caseSubmitBtn.textContent = 'Sent';
+          setTimeout(function(){
+            caseContactForm.reset();
+            caseContactSuccess.classList.remove('show');
+            caseSubmitBtn.textContent = 'Send message';
+            caseSubmitBtn.disabled = false;
+          }, 3200);
+        } else {
+          caseSubmitBtn.textContent = 'Something went wrong — try again';
+          caseSubmitBtn.disabled = false;
+        }
+      })
+      .catch(function(){
+        caseSubmitBtn.textContent = 'Something went wrong — try again';
+        caseSubmitBtn.disabled = false;
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
